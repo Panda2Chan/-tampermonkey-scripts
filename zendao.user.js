@@ -27,7 +27,7 @@
   async function main() {
     await injectJs('https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js');
     await injectJs('https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.11/clipboard.min.js');
-
+    
     function checkUrl() {
       const url = window.location.href;
       let res = {};
@@ -43,6 +43,24 @@
       return res;
     }
 
+    function setBtnOkStatus() {
+      const $btn = $('#copyCommitMsg');
+      const oldText = $btn.text();
+      let isProcessing = false;
+
+      return () => {
+        if (isProcessing) return;
+        
+        isProcessing = true;
+        $btn.text('复制成功✅');
+        
+        setTimeout(() => {
+          $btn.text(oldText);
+          isProcessing = false;
+        }, 1000);
+      }
+    }
+
     $(async function () {
       const { isBug, isTask } = checkUrl();
       if (!isBug && !isTask) return
@@ -55,8 +73,10 @@
     `;
       $('#mainMenu .page-title').append(dom);
 
+      const setOk = setBtnOkStatus();
       new ClipboardJS('#copyCommitMsg', {
         text: function () {
+          setOk();
           return message
         }
       });
