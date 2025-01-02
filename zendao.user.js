@@ -10,7 +10,6 @@
 // @grant        none
 // ==/UserScript==
 
-
 (function () {
   'use strict';
 
@@ -25,7 +24,6 @@
   }
 
   async function main() {
-    await injectJs('https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js');
     await injectJs('https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.11/clipboard.min.js');
     
     function checkUrl() {
@@ -43,43 +41,42 @@
       return res;
     }
 
-    function setBtnOkStatus() {
-      const $btn = $('#copyCommitMsg');
-      const oldText = $btn.text();
+    function setBtnOkStatus(btn, oldText) {
       let isProcessing = false;
 
       return () => {
         if (isProcessing) return;
         
         isProcessing = true;
-        $btn.text('复制成功✅');
+        btn.textContent = '复制成功✅';
         
         setTimeout(() => {
-          $btn.text(oldText);
+          btn.textContent = oldText;
           isProcessing = false;
         }, 1000);
       }
     }
 
-    $(async function () {
-      const { isBug, isTask } = checkUrl();
-      if (!isBug && !isTask) return
+    const { isBug, isTask } = checkUrl();
+    if (!isBug && !isTask) return;
 
-      const id = $('#mainMenu .page-title .label.label-id').text();
-      const text = $('#mainMenu .page-title .text').attr('title');
-      const message = `${isBug ? 'fix' : isTask ? 'feat' : ''}(#${id}): ${text}`;
-      const dom = `
-      <span id="copyCommitMsg" class="btn btn-sm btn-primary">复制commit message</span>
-    `;
-      $('#mainMenu .page-title').append(dom);
+    const id = document.querySelector('#mainMenu .page-title .label.label-id').textContent;
+    const text = document.querySelector('#mainMenu .page-title .text').getAttribute('title');
+    const message = `${isBug ? 'fix' : isTask ? 'feat' : ''}(#${id}): ${text}`;
 
-      const setOk = setBtnOkStatus();
-      new ClipboardJS('#copyCommitMsg', {
-        text: function () {
-          setOk();
-          return message
-        }
-      });
+    const btn = document.createElement('span');
+    btn.id = 'copyCommitMsg';
+    btn.className = 'btn btn-sm btn-primary';
+    btn.textContent = '复制commit message';
+    
+    document.querySelector('#mainMenu .page-title').appendChild(btn);
+
+    const setOk = setBtnOkStatus(btn, '复制commit message');
+    new ClipboardJS('#copyCommitMsg', {
+      text: function () {
+        setOk();
+        return message;
+      }
     });
   }
 
