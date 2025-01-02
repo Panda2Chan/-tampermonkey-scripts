@@ -4,9 +4,9 @@
 // @version      2024-12-10
 // @description  自动从禅道生成commit message，当前支持bug和task页面
 // @author       Xael
-// @match        https://zentao.topluck999.com/zentao/bug-view-**.html
-// @match        https://zentao.topluck999.com/zentao/task-view-**.html
-// @match        https://zentao.topluck999.com/zentao/execution-storyView-**.html
+// @match        https://*/zentao/bug-view-**.html
+// @match        https://*/zentao/task-view-**.html
+// @match        https://*/zentao/execution-storyView-**.html
 // @grant        none
 // ==/UserScript==
 
